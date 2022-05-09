@@ -1,0 +1,7 @@
+$AG = Get-ClusterResource | Where-Object { $_.resourcetype -eq "SQL Server Availability Group" }
+$Listener = Get-ClusterResource | Where-Object { $.Name -like $AG.Name + "*" -and $.resourcetype -eq "Network Name" }
+$IP = Get-ClusterResource | Where-Object { $.Name -like $AG.Name + "*" -and $.resourcetype -eq "IP Address" }
+
+Get-ClusterResource $IP.Name | Set-ClusterParameter -Multiple @{"ProbePort"="59999";"OverrideAddressMatch"=1;}
+Get-ClusterResource $Listener.Name | Set-ClusterParameter -Name "PublishPTRRecords" -Value 1
+Get-ClusterResource $Listener.Name | Set-ClusterParameter -Name "HostRecordTTL" -Value 60
